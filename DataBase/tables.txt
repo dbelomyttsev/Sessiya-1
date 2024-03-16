@@ -1,0 +1,117 @@
+-- Table: public.Material
+
+-- DROP TABLE IF EXISTS public."Material";
+
+CREATE TABLE IF NOT EXISTS public."Material"
+(
+    "ID" integer NOT NULL,
+    "Title" character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    "CountInPack" integer NOT NULL,
+    "Unit" character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    "CountInStock" double precision,
+    "MinCount" double precision NOT NULL,
+    "Description" text COLLATE pg_catalog."default",
+    "Cost" numeric(10,2) NOT NULL,
+    "Image" character varying(100) COLLATE pg_catalog."default",
+    "MaterialTypeID" integer NOT NULL,
+    CONSTRAINT "Material_pkey" PRIMARY KEY ("ID"),
+    CONSTRAINT "Material_MaterialTypeID_fkey" FOREIGN KEY ("MaterialTypeID")
+        REFERENCES public."MaterialType" ("ID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Material"
+    OWNER to postgres;
+
+
+-- Table: public.MaterialType
+
+-- DROP TABLE IF EXISTS public."MaterialType";
+
+CREATE TABLE IF NOT EXISTS public."MaterialType"
+(
+    "ID" integer NOT NULL,
+    "Title" character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    "DefectedPercent" double precision NOT NULL,
+    CONSTRAINT "MaterialType_pkey" PRIMARY KEY ("ID")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."MaterialType"
+    OWNER to postgres;
+
+
+-- Table: public.Product
+
+-- DROP TABLE IF EXISTS public."Product";
+
+CREATE TABLE IF NOT EXISTS public."Product"
+(
+    "ID" integer NOT NULL DEFAULT nextval('objects_id_seq'::regclass),
+    "Title" character varying(100) COLLATE pg_catalog."default" NOT NULL,
+    "ProductTypeID" integer,
+    "ArticleNumber" character varying(10) COLLATE pg_catalog."default" NOT NULL,
+    "Description" text COLLATE pg_catalog."default",
+    "Image" text COLLATE pg_catalog."default",
+    "ProductionPersonCount" integer,
+    "ProductionWorkshopNumber" integer,
+    "MinCostForAgent" numeric(10,2) NOT NULL,
+    CONSTRAINT "Product_pkey" PRIMARY KEY ("ID"),
+    CONSTRAINT "Product_ProductTypeID_fkey" FOREIGN KEY ("ProductTypeID")
+        REFERENCES public."ProductType" ("ID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."Product"
+    OWNER to postgres;
+
+-- Table: public.ProductMaterial
+
+-- DROP TABLE IF EXISTS public."ProductMaterial";
+
+CREATE TABLE IF NOT EXISTS public."ProductMaterial"
+(
+    "ID" integer NOT NULL,
+    "ProductID" integer,
+    "MaterialID" integer,
+    "Count" double precision,
+    CONSTRAINT "ProductMaterial_pkey" PRIMARY KEY ("ID"),
+    CONSTRAINT "ProductMaterial_MaterialID_fkey" FOREIGN KEY ("MaterialID")
+        REFERENCES public."Material" ("ID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION,
+    CONSTRAINT "ProductMaterial_ProductID_fkey" FOREIGN KEY ("ProductID")
+        REFERENCES public."Product" ("ID") MATCH SIMPLE
+        ON UPDATE NO ACTION
+        ON DELETE NO ACTION
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."ProductMaterial"
+    OWNER to postgres;
+
+
+-- Table: public.ProductType
+
+-- DROP TABLE IF EXISTS public."ProductType";
+
+CREATE TABLE IF NOT EXISTS public."ProductType"
+(
+    "ID" integer NOT NULL,
+    "Title" character varying(50) COLLATE pg_catalog."default" NOT NULL,
+    "DefectedPercent" double precision NOT NULL,
+    CONSTRAINT "ProductType_pkey" PRIMARY KEY ("ID")
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE IF EXISTS public."ProductType"
+    OWNER to postgres;
